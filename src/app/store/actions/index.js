@@ -1,1 +1,1 @@
-export { loginRequest, loginUser } from "./ActionCreator";
+export { loginRequest, loginUser, loginFail } from "./LoginActionCreator";

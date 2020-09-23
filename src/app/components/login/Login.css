@@ -1,8 +1,4 @@
 .Login {
-  margin-top: 5%;
+  margin: 20px auto;
   padding: 30px;
-}
-
-.InValid {
-  color: red;
 }

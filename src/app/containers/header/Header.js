@@ -82,7 +82,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function PrimarySearchAppBar({ loginDetails, onLogout }) {
-  // console.log(loginDetails);
 
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);

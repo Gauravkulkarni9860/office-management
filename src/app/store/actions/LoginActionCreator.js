@@ -1,4 +1,4 @@
-import * as actionType from "../actions/ActionType";
+import * as actionType from "./ActionType";
 import axios from "axios";
 
 export const loginUser = (login) => {
@@ -8,21 +8,18 @@ export const loginUser = (login) => {
   };
 };
 
-export const loginRequest = (credentials) => {
-  //   console.log(credentials);
+export const loginRequest = (username, password) => {
   return (dispatch) => {
     axios
       .post("https://staging.api.fusionloopsolution.com/user/auth/login", {
-        username: credentials.userName,
-        password: credentials.password,
+        username: username,
+        password: password,
       })
       .then((response) => {
         dispatch(loginUser(response.data));
-        alert("Login Successfull...!");
       })
       .catch((error) => {
-        dispatch(loginFail())
-        // alert("Error: Login Failed...! Incorrect id or password");
+        dispatch(loginFail());
       });
   };
 };

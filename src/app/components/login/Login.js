@@ -13,7 +13,7 @@ class Login extends Component {
   state = {
     username: null,
     password: null,
-    isValid: true,
+    isEmpty: false,
   };
 
   handleChange = (e) => {
@@ -24,27 +24,22 @@ class Login extends Component {
 
   handleSubmit = (e) => {
     e.preventDefault();
-    const credentials = {
-      userName: this.state.username,
-      password: this.state.password,
-    };
     if (this.state.username !== null && this.state.password !== null) {
-      this.props.onLogin(credentials);
-      // alert("Error: Login Failed...! Incorrect id or password");
+      this.props.onLogin(this.state.username, this.state.password);
+    } else {
+      // alert("Please enter username & password");
+      this.props.onLoginFail();
+      this.setState({ isEmpty: true });
     }
-    else {
-      alert("Please enter username & password");
-    }
-      
   };
 
   render() {
     let token = localStorage.getItem("token");
     if (this.props.loginStatus) {
-      const generateRandomString = (length = 30) => {
-        return Math.random().toString(20).substr(2, length);
-      };
-      localStorage.setItem("token", JSON.stringify(generateRandomString()));
+      localStorage.setItem(
+        "token",
+        JSON.stringify(this.props.loginDetail.accessToken)
+      );
       return <Redirect to="/dashboard" />;
     } else if (token !== null) {
       return <Redirect to="/dashboard" />;
@@ -52,9 +47,9 @@ class Login extends Component {
 
     return (
       <Container>
-        <Row className="Login">
+        <Row>
           <Col sm={4} lg={4}></Col>
-          <Col sm={4} lg={4}>
+          <Col sm={4} lg={4} className="Login">
             <Card style={{ width: "20rem" }}>
               <Card.Body>
                 <Card.Title className="mb-4">
@@ -83,17 +78,17 @@ class Login extends Component {
                   <TextField
                     type="password"
                     label="Password"
-                    style={{ marginBottom: "40px" }}
+                    style={{ marginBottom: "20px" }}
                     name="password"
                     onChange={this.handleChange}
                     error={this.props.isError}
-                    helperText={
-                      this.props.isError
-                        ? "Incorrect username or password"
-                        : null
-                    }
                   />
                 </form>
+                <p hidden={!this.props.isError} style={{ color: "red" }}>
+                  {this.props.isError && !this.state.isEmpty
+                    ? "Incorrect username or password"
+                    : "please enter data in fields"}
+                </p>
                 <Button
                   variant="contained"
                   color="primary"
@@ -114,6 +109,7 @@ class Login extends Component {
 
 const mapStateToProps = (state) => {
   return {
+    loginDetail: state.login,
     loginStatus: state.loggedIn,
     isError: state.isError,
   };
@@ -121,7 +117,9 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onLogin: (credentials) => dispatch(actionCreator.loginRequest(credentials)),
+    onLogin: (userName, password) =>
+      dispatch(actionCreator.loginRequest(userName, password)),
+    onLoginFail: () => dispatch(actionCreator.loginFail()),
   };
 };
 
