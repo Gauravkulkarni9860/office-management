@@ -1,49 +1,112 @@
 import React, { Component } from "react";
 
 import { Card, Col, Container, Row } from "react-bootstrap";
-import { TextField, Button } from "@material-ui/core";
 import { connect } from "react-redux";
 import { Redirect } from "react-router-dom";
 
 import "./Login.css";
 import logo from "../../assests/images.png";
 import * as actionCreator from "../../store/actions/index";
+import Input from "../../containers/UI/Input/Input";
+import Button from "../../containers/UI/Button/Button";
+import { checkValidity } from "../../utils/auth";
+import { setToken } from "../../utils/token";
 
 class Login extends Component {
   state = {
-    username: null,
-    password: null,
-    isEmpty: false,
+    controls: {
+      username: {
+        type: "text",
+        placeholder: "Username",
+        value: "",
+        validation: {
+          required: true,
+        },
+        valid: false,
+        touched: false,
+      },
+      password: {
+        type: "password",
+        placeholder: "Password",
+        value: "",
+        validation: {
+          required: true,
+        },
+        valid: false,
+        touched: false,
+      },
+    },
+    formIsValid: false,
   };
 
-  handleChange = (e) => {
-    this.setState({
-      [e.target.name]: e.target.value,
-    });
+  inputChangeHandler = (e, formId) => {
+    const formUpdate = {
+      ...this.state.controls,
+    };
+    const updatedElement = {
+      ...formUpdate[formId],
+    };
+    updatedElement.value = e.target.value;
+    updatedElement.touched = true;
+    updatedElement.valid = checkValidity(
+      updatedElement.value,
+      updatedElement.validation
+    );
+    formUpdate[formId] = updatedElement;
+    let formIsValid = true;
+    for (let inputIdentifier in formUpdate) {
+      formIsValid = formUpdate[inputIdentifier].valid && formIsValid;
+    }
+
+    this.setState({ controls: formUpdate, formIsValid: formIsValid });
   };
 
   handleSubmit = (e) => {
     e.preventDefault();
-    if (this.state.username !== null && this.state.password !== null) {
-      this.props.onLogin(this.state.username, this.state.password);
-    } else {
-      // alert("Please enter username & password");
-      this.props.onLoginFail();
-      this.setState({ isEmpty: true });
+    const loginData = {};
+    for (let formElementIdentifier in this.state.controls) {
+      loginData[formElementIdentifier] = this.state.controls[
+        formElementIdentifier
+      ].value;
     }
+    this.props.onLogin(loginData);
   };
 
   render() {
     let token = localStorage.getItem("token");
     if (this.props.loginStatus) {
-      localStorage.setItem(
-        "token",
-        JSON.stringify(this.props.loginDetail.accessToken)
-      );
+      setToken(this.props.loginDetail.accessToken);
       return <Redirect to="/dashboard" />;
     } else if (token !== null) {
       return <Redirect to="/dashboard" />;
     }
+
+    const formElementArray = [];
+    for (let key in this.state.controls) {
+      formElementArray.push({
+        id: key,
+        config: this.state.controls[key],
+      });
+    }
+
+    let form = (
+      <form onSubmit={this.handleSubmit}>
+        {formElementArray.map((formElement) => (
+          <Input
+            key={formElement.id}
+            type={formElement.config.type}
+            value={formElement.config.value}
+            invalid={!formElement.config.valid}
+            touched={formElement.config.touched}
+            placeholder={formElement.config.placeholder}
+            changed={(e) => this.inputChangeHandler(e, formElement.id)}
+          />
+        ))}
+        <Button btnType="Success" disabled={!this.state.formIsValid}>
+          Login
+        </Button>
+      </form>
+    );
 
     return (
       <Container>
@@ -66,37 +129,10 @@ class Login extends Component {
                     }}
                   />
                 </Card.Subtitle>
-                <form>
-                  <TextField
-                    type="text"
-                    label="Username"
-                    style={{ marginBottom: "20px" }}
-                    name="username"
-                    onChange={this.handleChange}
-                    error={this.props.isError}
-                  />
-                  <TextField
-                    type="password"
-                    label="Password"
-                    style={{ marginBottom: "20px" }}
-                    name="password"
-                    onChange={this.handleChange}
-                    error={this.props.isError}
-                  />
-                </form>
+                {form}
                 <p hidden={!this.props.isError} style={{ color: "red" }}>
-                  {this.props.isError && !this.state.isEmpty
-                    ? "Incorrect username or password"
-                    : "please enter data in fields"}
+                  {this.props.isError ? "Incorrect username or password" : null}
                 </p>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  style={{ marginBottom: "40px" }}
-                  onClick={this.handleSubmit}
-                >
-                  Login
-                </Button>
               </Card.Body>
             </Card>
           </Col>
@@ -109,17 +145,15 @@ class Login extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    loginDetail: state.login,
-    loginStatus: state.loggedIn,
-    isError: state.isError,
+    loginDetail: state.loginReducer.login,
+    loginStatus: state.loginReducer.loggedIn,
+    isError: state.loginReducer.isError,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onLogin: (userName, password) =>
-      dispatch(actionCreator.loginRequest(userName, password)),
-    onLoginFail: () => dispatch(actionCreator.loginFail()),
+    onLogin: (loginData) => dispatch(actionCreator.loginRequest(loginData)),
   };
 };
 

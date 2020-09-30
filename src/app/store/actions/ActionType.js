@@ -1,4 +1,14 @@
-
 export const LOGIN_SUCCESS = "LOGIN_SUCCESS";
 export const LOGIN_FAIL = "LOGIN_FAIL";
 export const LOGOUT = "LOGOUT";
+
+export const FETCH_DEPARTMENTS = "FETCH_DEPARTMENTS";
+export const FETCH_CASTS = "FETCH_CASTS";
+
+export const ADD_OFFICER_SUCCESS = "ADD_OFFICER_SUCCESS";
+export const ADD_OFFICER_FAIL = "ADD_OFFICER_FAIL";
+
+export const FETCH_COUNT = "FETCH_COUNT";
+export const FETCH_OFFICER_LIST = "FETCH_OFFICER_LIST"; 
+
+export const GET_DETAILS = "GET_DETAILS";

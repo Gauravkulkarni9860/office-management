@@ -6,26 +6,39 @@ const initialState = {
   isError: false,
 };
 
+const loginSuccess = (state, action) => {
+  return {
+    ...state,
+    login: action.loginDetails,
+    loggedIn: true,
+  };
+};
+
+const loginFail = (state, action) => {
+  return {
+    ...state,
+    isError: true,
+  };
+};
+
+const logOUt = (state, action) => {
+  return {
+    ...state,
+    loggedIn: false,
+    isError: false,
+  };
+};
+
 const reducer = (state = initialState, action) => {
   switch (action.type) {
     case actionType.LOGIN_SUCCESS:
-      return {
-        ...state,
-        login: action.loginDetails,
-        loggedIn: true,
-      };
+      return loginSuccess(state, action);
 
     case actionType.LOGIN_FAIL:
-      return {
-        ...state,
-        isError: true,
-      };
+      return loginFail(state, action);
 
     case actionType.LOGOUT:
-      return {
-        ...state,
-        loggedIn: false,
-      };
+      return logOUt(state, action);
 
     default:
       return state;

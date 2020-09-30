@@ -1,0 +1,20 @@
+.Header {
+  /* display: inline; */
+  margin-top: 6%;
+  margin-left: 6%;
+  text-align: left;
+  font-weight: bolder;
+  font-size: 20px;
+  margin-bottom: 40px;
+}
+
+.Content {
+  margin-left: 6%;
+  margin-right: 2%;
+  padding: 20px;
+  box-sizing: border-box;
+  box-shadow: 2px 2px #ccc;
+  background-color: white;
+  text-align: left;
+  margin-bottom: 20px;
+}

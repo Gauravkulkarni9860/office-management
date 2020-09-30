@@ -1,0 +1,12 @@
+.Header {
+  margin-top: 6%;
+  padding: 10px;
+  text-align: left;
+  font-weight: bolder;
+  font-size: 20px;
+}
+
+.Content {
+  display: block;
+  margin-bottom: 20px;
+}

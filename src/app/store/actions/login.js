@@ -1,5 +1,5 @@
 import * as actionType from "./ActionType";
-import axios from "axios";
+import axios from "../../utils/axios";
 
 export const loginUser = (login) => {
   return {
@@ -8,15 +8,16 @@ export const loginUser = (login) => {
   };
 };
 
-export const loginRequest = (username, password) => {
+export const loginRequest = (credentials) => {
   return (dispatch) => {
     axios
-      .post("https://staging.api.fusionloopsolution.com/user/auth/login", {
-        username: username,
-        password: password,
+      .post("/user/auth/login", {
+        username: credentials.username,
+        password: credentials.password,
       })
       .then((response) => {
         dispatch(loginUser(response.data));
+        alert("Login successfull...");
       })
       .catch((error) => {
         dispatch(loginFail());
