@@ -91,3 +91,34 @@ export const editItem = (id, token) => {
       .then((response) => dispatch(getDetailsToEdit(response.data)));
   };
 };
+
+export const updloadEditedData = (id, token, data) => {
+  console.log(data);
+  console.log(id);
+  return (dispatch) => {
+    // axios.put(
+    //   "/adhikari/" + id,
+    //   {
+    //     cast: data.cast,
+    //     complains: data.complains,
+    //     createdBy: data.createdBy,
+    //     createdDate: data.createdDate,
+    //     department: data.department,
+    //     designation: data.designation,
+    //     dob: data.dob,
+    //     email: data.email,
+    //     firstName: data.firstName,
+    //     gender: data.gender,
+    //     id: data.id,
+    //     lastName: data.lastName,
+    //     middleName: data.middleName,
+    //     phone: data.phone,
+    //     subcast: data.subcast,
+    //     updatedBy: data.updatedBy,
+    //   },
+    //   {
+    //     headers: { Authorization: "Bearer " + token },
+    //   }
+    // );
+  };
+}

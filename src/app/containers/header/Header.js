@@ -199,6 +199,8 @@ function PrimarySearchAppBar({ loginDetails, onLogout }) {
     return onLogout();
   };
 
+  const userName = loginDetails.firstName;
+
   const menuId = "primary-search-account-menu";
   const renderMenu = (
     <Menu
@@ -228,9 +230,7 @@ function PrimarySearchAppBar({ loginDetails, onLogout }) {
       onClose={handleMobileMenuClose}
     >
       <MenuItem onClick={handleProfileMenuOpen}>
-        <Typography style={{ margin: "5px" }}>
-          Welcome {loginDetails.firstName}
-        </Typography>
+        <Typography style={{ margin: "5px" }}>Welcome {userName}</Typography>
       </MenuItem>
 
       <MenuItem>
@@ -323,7 +323,7 @@ function PrimarySearchAppBar({ loginDetails, onLogout }) {
             >
               <AccountCircle />
               <Typography style={{ margin: "5px" }}>
-                Welcome {loginDetails.firstName}
+                Welcome {userName}
               </Typography>
             </IconButton>
           </div>

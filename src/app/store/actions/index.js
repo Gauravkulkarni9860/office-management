@@ -10,4 +10,5 @@ export {
   deleteItem,
   editItem,
   getItems,
+  updloadEditedData,
 } from "./officer";

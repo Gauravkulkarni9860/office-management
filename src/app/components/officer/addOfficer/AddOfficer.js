@@ -9,6 +9,7 @@ import Header from "../../../containers/header/Header";
 import "./AddOfficer.css";
 import { checkValidity } from "../../../utils/auth";
 import * as actionCreator from "../../../store/actions/index";
+import { Redirect } from "react-router-dom";
 
 class AddOfficer extends Component {
   state = {
@@ -170,6 +171,7 @@ class AddOfficer extends Component {
       },
     },
     formIsValid: false,
+    isSubmit: false,
   };
 
   inputChangeHandler = (e, formId) => {
@@ -211,7 +213,41 @@ class AddOfficer extends Component {
   handleUpdate = (e) => {
     e.preventDefault();
     console.log("update");
-  }
+    const formData = {
+      ...this.state.addOfficerForm,
+    };
+
+    const subCast = this.props.subCastList.find(
+      (item) => item.name === formData.cast.value
+    );
+
+    let updatedData = {
+      firstName: formData.firstName.value,
+      middleName: formData.middleName.value,
+      lastName: formData.lastName.value,
+      phone: formData.mobileNumber.value,
+      dob: formData.dateOfBirth.value,
+      email: formData.email.value,
+      gender: formData.gender.value,
+      department: this.props.departmentList.find(
+        (value) => value.name === formData.department.value
+      ),
+      designation: formData.designation.value,
+      cast: this.props.castList.find(
+        (value) => value.name === formData.cast.value
+      ),
+      subcast: subCast.subcast?.find(
+        (value) => value.name === formData.subcast.value
+      ),
+    };
+    let token = localStorage.getItem("token");
+    this.props.updateData(
+      this.props.editData.id,
+      JSON.parse(token),
+      updatedData
+    );
+    this.setState({ isSubmit: true });
+  };
 
   handleSubmit = (e) => {
     e.preventDefault();
@@ -244,10 +280,8 @@ class AddOfficer extends Component {
     };
 
     let token = localStorage.getItem("token");
-
     this.props.addOfficer(officerData, JSON.parse(token), this.props.isEdit);
-
-    // this.props.history.replace("/officer/list");
+    this.setState({ isSubmit: true });
   };
 
   componentDidMount() {
@@ -256,7 +290,28 @@ class AddOfficer extends Component {
     this.props.fetchCasts(JSON.parse(token));
   }
 
+  
   componentDidUpdate() {
+    const formEdit = {
+      ...this.state.addOfficerForm,
+    };
+
+    console.log(Date.parse(this.props.editData?.dob));
+
+    if (this.props.isEdit) {
+      formEdit["firstName"].value = this.props.editData.firstName;
+      formEdit["middleName"].value = this.props.editData.middleName;
+      formEdit["lastName"].value = this.props.editData.lastName;
+      formEdit["mobileNumber"].value = this.props.editData.phone;
+      formEdit["gender"].value = this.props.editData.gender;
+      // formEdit["dateOfBirth"].value = this.props.editData.dob;
+      formEdit["email"].value = this.props.editData.email;
+      formEdit["department"].value = this.props.editData.department?.name;
+      formEdit["designation"].value = this.props.editData.designation;
+      formEdit["cast"].value = this.props.editData.cast?.name;
+      formEdit["subcast"].value = this.props.editData.subcast?.name;
+    }
+
     const formUpdate = {
       ...this.state.addOfficerForm,
     };
@@ -277,23 +332,9 @@ class AddOfficer extends Component {
   }
 
   render() {
-    // const formUpdate = {
-    //   ...this.state.addOfficerForm,
-    // };
-
-    // if (this.props.isEdit) {
-    //   formUpdate["firstName"].value = this.props.editData.firstName;
-    //   formUpdate["middleName"].value = this.props.editData.middleName;
-    //   formUpdate["lastName"].value = this.props.editData.lastName;
-    //   formUpdate["mobileNumber"].value = this.props.editData.phone;
-    //   // formUpdate["gender"].value = this.props.editData.gender;
-    //   formUpdate["dateOfBirth"].value = this.props.editData.dob;
-    //   formUpdate["email"].value = this.props.editData.email;
-    //   formUpdate["department"].value = this.props.editData.department?.name;
-    //   formUpdate["designation"].value = this.props.editData.designation;
-    //   formUpdate["cast"].value = this.props.editData.cast?.name;
-    //   formUpdate["subcast"].value = this.props.editData.subcast?.name;
-    // }
+    if (this.state.isSubmit) {
+      return <Redirect to="/officer/list" />;
+    }
 
     const formElementArray = [];
     for (let key in this.state.addOfficerForm) {
@@ -320,13 +361,15 @@ class AddOfficer extends Component {
         <Button
           btnType="Success"
           clicked={this.props.isEdit ? this.handleUpdate : this.handleSubmit}
-          disabled={!this.state.formIsValid}
+          disabled={this.props.isEdit ? false : !this.state.formIsValid}
         >
           {this.props.isEdit ? "Update Officer" : "Add Officer"}
         </Button>
         <Button btnType="Danger">Cancel</Button>
       </form>
     );
+
+     
 
     return (
       <div>
@@ -369,6 +412,7 @@ const mapDispatchToProps = (dispatch) => {
     fetchCasts: (token) => dispatch(actionCreator.fetchCasts(token)),
     addOfficer: (officerData, token, isEdit) =>
       dispatch(actionCreator.submitOfficerRequest(officerData, token)),
+      updateData : (id, token, data) => dispatch(actionCreator.updloadEditedData(id, token, data))
   };
 };
 
